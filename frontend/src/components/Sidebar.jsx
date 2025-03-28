@@ -16,7 +16,6 @@ const Sidebar = () => {
 
     if (isUsersLoading) return <SidebarSkeleton />;
 
-    // Filter users if showOnlineOnly is true
     const filteredUsers = showOnlineOnly 
         ? users.filter(user => onlineUsers.includes(user._id))
         : users;
@@ -42,8 +41,8 @@ const Sidebar = () => {
                 </div>
             </div>
 
-            <div className="flex-1 overflow-y-auto"> {/* Scrollable container */}
-                <div className="flex flex-col"> {/* Vertical stack */}
+            <div className="flex-1 overflow-y-auto">
+                <div className="flex flex-col"> 
                     {filteredUsers.map((user) => (
                         <button
                             key={user._id}
