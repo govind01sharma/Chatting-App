@@ -90,19 +90,49 @@ export const logout = (req, res) => {
 
 export const updateProfile = async (req, res) => {
     try {
-        const {profilePic} = req.body;
+        const { profilePic, fullName, email } = req.body;
         const userId = req.user._id;
-        if(!profilePic) {
-            return res.status(400).json({message: "Profile picture is required"});
+        
+        // Prepare update object
+        const updateData = {};
+        
+        // Handle profile picture update if provided
+        if (profilePic) {
+            const uploadResponse = await cloudinary.uploader.upload(profilePic);
+            updateData.profilePic = uploadResponse.secure_url;
         }
-
-        const uploadResponse = await cloudinary.uploader.upload(profilePic);
-        const updatedUser = await User.findByIdAndUpdate(userId, {profilePic: uploadResponse.secure_url}, {new: true})
+        
+        // Handle fullName update if provided
+        if (fullName) {
+            updateData.fullName = fullName;
+        }
+        
+        // Handle email update if provided
+        if (email) {
+            // Check if email already exists (if you want unique emails)
+            const existingUser = await User.findOne({ email });
+            if (existingUser && existingUser._id.toString() !== userId.toString()) {
+                return res.status(400).json({ message: "Email already in use" });
+            }
+            updateData.email = email;
+        }
+        
+        // If no fields to update, return error
+        if (Object.keys(updateData).length === 0) {
+            return res.status(400).json({ message: "No fields to update" });
+        }
+        
+        // Update user
+        const updatedUser = await User.findByIdAndUpdate(
+            userId, 
+            updateData, 
+            { new: true }
+        );
 
         res.status(200).json(updatedUser);
     } catch (error) {
         console.log("Error in updateProfile controller:", error.message);
-        res.status(500).json({message: "Internal Server error"});
+        res.status(500).json({ message: "Internal Server error" });
     }
 };
 
