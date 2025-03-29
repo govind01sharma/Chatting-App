@@ -109,7 +109,7 @@ export const updateProfile = async (req, res) => {
         
         // Handle email update if provided
         if (email) {
-            // Check if email already exists (if you want unique emails)
+            // Check if email already exists (we want unique emails)
             const existingUser = await User.findOne({ email });
             if (existingUser && existingUser._id.toString() !== userId.toString()) {
                 return res.status(400).json({ message: "Email already in use" });
