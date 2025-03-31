@@ -136,6 +136,29 @@ export const updateProfile = async (req, res) => {
     }
 };
 
+export const deleteAccount = async (req, res) => {
+    try {
+      const { password } = req.body;
+      const userId = req.user._id;
+  
+      const user = await User.findById(userId);
+      const isPasswordCorrect = await bcrypt.compare(password, user.password);
+      
+      if (!isPasswordCorrect) {
+        return res.status(400).json({ message: "Invalid password" });
+      }
+  
+      await User.findByIdAndDelete(userId);
+  
+      res.cookie("jwt", "", { maxAge: 0 });
+  
+      res.status(200).json({ message: "Account deleted successfully" });
+    } catch (error) {
+      console.log("Error in deleteAccount controller:", error.message);
+      res.status(500).json({ message: "Internal Server error" });
+    }
+  };
+
 export const checkAuth = async (req, res) => {
     try {
         res.status(200).json(req.user);
