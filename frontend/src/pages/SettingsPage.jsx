@@ -14,6 +14,12 @@ const SettingsPage = () => {
       return;
     }
 
+    // Confirm deletion with user
+    const confirmed = window.confirm(
+      `Are you sure you want to delete your account (${authUser.email})? This action cannot be undone.`
+    );
+    if (!confirmed) return;
+
     try {
       setIsDeleting(true);
       await deleteAccount(password);
@@ -30,9 +36,13 @@ const SettingsPage = () => {
     <div className="p-4 max-w-md mx-auto">
       <h1 className="text-2xl font-bold mb-6">Settings</h1>
       
-      <div className="bg-red-100 border-l-4 border-red-500 text-red-700 p-4 mb-6">
-        <p className="font-bold">Warning</p>
-        <p>Deleting your account will remove all your data permanently.</p>
+      
+      {/* Danger Zone Section */}
+      <div className="bg-red-50 border-l-4 border-red-500 text-red-700 p-4 mb-6 rounded">
+        <p className="font-bold">Danger Zone</p>
+        <p className="text-sm mt-1">
+          Deleting your account will permanently remove all your data, including messages and profile information.
+        </p>
       </div>
 
       <form onSubmit={handleDeleteAccount} className="space-y-4">
@@ -46,7 +56,8 @@ const SettingsPage = () => {
             value={password}
             onChange={(e) => setPassword(e.target.value)}
             className="mt-1 block w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-indigo-500 focus:border-indigo-500"
-            placeholder="Enter your password"
+            placeholder="Enter your password to confirm"
+            autoComplete="current-password"
           />
         </div>
 
@@ -55,7 +66,7 @@ const SettingsPage = () => {
           disabled={isDeleting}
           className="w-full flex justify-center py-2 px-4 border border-transparent rounded-md shadow-sm text-sm font-medium text-white bg-red-600 hover:bg-red-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-red-500 disabled:opacity-50 disabled:cursor-not-allowed"
         >
-          {isDeleting ? 'Deleting...' : 'Delete My Account'}
+          {isDeleting ? 'Deleting...' : `Delete Account (${authUser.email})`}
         </button>
       </form>
     </div>
